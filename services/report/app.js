@@ -24,7 +24,14 @@ async function printReport() {
 }
 
 async function consume() {
-    //TODO: Constuir a comunicação com a fila 
-} 
+    const rabbitMQ = await RabbitMQService.getInstance()
+
+    await rabbitMQ.consume('report', async (msg) => {
+        const data = JSON.parse(msg.content)
+
+        await updateReport(data.products)
+        await printReport()
+    })
+}
 
 consume()
